@@ -17,16 +17,16 @@ class Entry(models.Model):
     date_added= models.DateTimeField(auto_now_add=True)
 
     class Meta:
-<<<<<<< HEAD
+
         verbose_name_plural = 'entries'
 
     def __str__(self):
         """Return a simple string representing the Entry model"""
         return f"{self.text[:50]}..."
-=======
+
         verbose_name_plural = 'Entries'
 
     def __str__(self):
         """Return a simple string representing the Entry model"""
         return f"{self.text[:50]}"
->>>>>>> 49ecbf03508bc36f273e5605671f0a1b6eaeb7e2
+

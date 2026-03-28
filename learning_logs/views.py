@@ -1,9 +1,14 @@
 from django.shortcuts import render
 
+from .models import Topic
 # Create your views here.
-<<<<<<< HEAD
+
 def index(request):
     """The Home Page for learning log"""
     return render(request, 'learning_logs/index.html')
-=======
->>>>>>> 49ecbf03508bc36f273e5605671f0a1b6eaeb7e2
+
+def topics(request):
+    """Show all topics"""
+    topics = Topic.objects.order_by('date_added')
+    context = {'topics': topics}
+    return render(request, 'learning_logs/topics.html', context)
