@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'accounts',
 
 ]
+# My settings
+LOGIN_REDIRECT_URL = 'learning_logs:index'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
