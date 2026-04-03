@@ -131,27 +131,29 @@ STATIC_URL = 'static/'
 
 # Platform.sh setting
 from platformshconfig import Config
+from pathlib import Path
 
 config = Config()
-if config.is_valid_platform():
-    ALLOWED_HOSTS.append('.platformsh.site')
 
-    if config.appDir:
-        SATIC_ROOT = Path(config.appDir) /'static'
+if config.is_valid_platform():
+    ALLOWED_HOSTS += ['.upsun.com', '.platformsh.site']
+    DEBUG = False
+
     if config.projectEntropy:
         SECRET_KEY = config.projectEntropy
 
+    # STATIC_ROOT = Path(config.appDir) / 'static' if hasattr(config, 'appDir') and config.appDir else STATIC_ROOT
+
+    # Database configuration
     if not config.in_build():
-        db_settings =config.credentials('database')
-        DATABASES ={
+        db_settings = config.credentials('database')
+        DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': db_settings['path'],
                 'USER': db_settings['username'],
                 'PASSWORD': db_settings['password'],
                 'HOST': db_settings['host'],
-                'PORT': db_settings['port'],
-            },
+                'PORT': db_settings.get('port', '5432'),
+            }
         }
-else:
-    pass

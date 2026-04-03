@@ -1,51 +1,56 @@
-name: "ll_project"
+applications:
+  ll_project:
+    type: python:3.12
+    build:
+      flavor: none
 
-type: python:3.10   # or 3.11 / 3.13 depending on your preference
+    dependencies:
+      python:
+        - gunicorn
+        - psycopg2-binary
+        - platformshconfig
 
-relationships:
-  databae:" db:postgresql"
+    web:
+      commands:
+        start: "gunicorn --bind 0.0.0.0:$PORT learning_log.wsgi:application"
+      locations:
+        "/":
+          passthru: true
+          allow: true
+        "/static":
+          root: "static"
+          expires: 1h
+          allow: true
 
-build:
-  flavor: none
+    disk: 512
 
-dependencies:
-  python:
-    - gunicorn
-    - psycopg2-binary
-    - platformshconfig
+    mounts:
+      "/media":
+        source: local
+        source_path: media
 
-web:
-  commands:
-    start: "gunicorn --bind 0.0.0.0:$PORT learning_log.wsgi:application"
-  locations:
-    "/":
-      passthru: true
-      allow: true
-    "/static":
-      root: "static"
-      expires: 1h
-      allow: true
+    hooks:
+      deploy: |
+        python manage.py migrate --noinput
+        python manage.py collectstatic --noinput --clear
 
-disk: 512
+    # Relationship to the database service (important!)
+    relationships:
+      database: "db:postgresql"
 
-mounts:
-  "/logs":
-    source: local
-    source_path: media
+services:
+  db:
+    type: postgresql:16
+    disk: 512
+    size: S
 
-runtime:
-  extensions:
-    - pgsql   # optional but helpful
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "app:http"
+    cache:
+      enabled: false
 
-# Optional: Run migrations automatically on deploy
-hooks:
-  build: |
-     pip install --upgrade pip
-     pip install -r requirements.txt
-     pip install -r requirements_remote.txt
-     
-     mkdir logs
-     python manage.py collectstatic
-     rm -rf log
-  deploy: |
-    python manage.py migrate
+  "https://www.{default}/":
+    type: redirect
+    to: "https://{default}/"
