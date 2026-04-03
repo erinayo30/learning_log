@@ -1,0 +1,51 @@
+name: "ll_project"
+
+type: python:3.10   # or 3.11 / 3.13 depending on your preference
+
+relationships:
+  databae:" db:postgresql"
+
+build:
+  flavor: none
+
+dependencies:
+  python:
+    - gunicorn
+    - psycopg2-binary
+    - platformshconfig
+
+web:
+  commands:
+    start: "gunicorn --bind 0.0.0.0:$PORT learning_log.wsgi:application"
+  locations:
+    "/":
+      passthru: true
+      allow: true
+    "/static":
+      root: "static"
+      expires: 1h
+      allow: true
+
+disk: 512
+
+mounts:
+  "/logs":
+    source: local
+    source_path: media
+
+runtime:
+  extensions:
+    - pgsql   # optional but helpful
+
+# Optional: Run migrations automatically on deploy
+hooks:
+  build: |
+     pip install --upgrade pip
+     pip install -r requirements.txt
+     pip install -r requirements_remote.txt
+     
+     mkdir logs
+     python manage.py collectstatic
+     rm -rf log
+  deploy: |
+    python manage.py migrate
