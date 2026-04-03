@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'learning_logs',
     'accounts',
 
+#     Third party apps.
+    'django_bootstrap5',
+
 ]
 # My settings
 LOGIN_REDIRECT_URL = 'learning_logs:index'
