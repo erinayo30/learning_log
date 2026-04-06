@@ -6,9 +6,9 @@ applications:
 
     dependencies:
       python:
-        - gunicorn
-        - psycopg2-binary
-        - platformshconfig
+        gunicorn: "*"
+        psycopg2-binary: "*"
+        platformshconfig: "*"
 
     web:
       commands:
@@ -22,8 +22,6 @@ applications:
           expires: 1h
           allow: true
 
-    disk: 512
-
     mounts:
       "/media":
         source: local
@@ -34,14 +32,12 @@ applications:
         python manage.py migrate --noinput
         python manage.py collectstatic --noinput --clear
 
-    # Relationship to the database service (important!)
     relationships:
       database: "db:postgresql"
 
 services:
   db:
     type: postgresql:16
-    disk: 512
     size: S
 
 routes:
