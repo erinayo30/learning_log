@@ -43,7 +43,7 @@ services:
 routes:
   "https://{default}/":
     type: upstream
-    upstream: "app:http"
+    upstream: "ll_project:http"
     cache:
       enabled: false
 
